@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090914">
+  <meta name="description" content="A browser-based Rock Paper Scissors AI game using MediaPipe hand tracking and computer vision.">
+  <title>Gesture Arena — Rock Paper Scissors AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Gesture Arena home">
+        <span class="brand-mark">✦</span>
+        <span>GESTURE<span class="brand-accent">ARENA</span></span>
+      </a>
+      <div class="topbar-right">
+        <span class="status-dot" id="headerDot"></span>
+        <span id="headerStatus">CAMERA OFF</span>
+        <a class="github-link" href="https://github.com/" target="_blank" rel="noreferrer" aria-label="GitHub profile">GitHub ↗</a>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="eyebrow"><span class="eyebrow-line"></span> COMPUTER VISION • HAND TRACKING</div>
+      <h1>Make your move.<br><span class="gradient-text">Let AI decide.</span></h1>
+      <p class="hero-copy">The classic game, powered by real-time hand landmarks. Show a gesture, lock it in, and challenge the computer.</p>
+      <div class="hero-pills">
+        <span>✦ MediaPipe</span><span>◉ Live camera</span><span>⚡ Runs in your browser</span>
+      </div>
+    </section>
+
+    <section class="game-grid">
+      <article class="panel camera-panel">
+        <div class="panel-heading">
+          <div><span class="section-kicker">01 / LIVE INPUT</span><h2>Your camera</h2></div>
+          <span class="live-badge" id="cameraBadge"><span class="mini-dot"></span> STANDBY</span>
+        </div>
+        <div class="camera-stage" id="cameraStage">
+          <video id="webcam" autoplay playsinline muted></video>
+          <canvas id="overlay"></canvas>
+          <div class="camera-placeholder" id="cameraPlaceholder">
+            <div class="camera-icon">◎</div>
+            <strong>Your camera view appears here</strong>
+            <span>Start the camera and hold your hand in view.</span>
+          </div>
+          <div class="camera-overlay-top"><span>LIVE FEED</span><span id="fpsLabel">AI READY</span></div>
+          <div class="camera-overlay-bottom"><span class="corner-tag">HAND LANDMARKS</span><span id="landmarkCount">0 TRACKED</span></div>
+          <div class="countdown-overlay hidden" id="countdownOverlay">3</div>
+        </div>
+        <div class="gesture-readout">
+          <div class="gesture-icon" id="gestureIcon">?</div>
+          <div class="gesture-copy"><span class="section-kicker">DETECTED GESTURE</span><strong id="gestureName">Waiting for hand</strong><span id="gestureHint">Start camera to begin tracking</span></div>
+          <span class="confidence-chip" id="confidenceChip">—</span>
+        </div>
+        <div class="camera-actions">
+          <button class="button button-primary" id="startCameraBtn"><span>◉</span> Start camera</button>
+          <button class="button button-secondary" id="stopCameraBtn" disabled>Stop camera</button>
+        </div>
+        <p class="privacy-note"><span>⌁</span> Camera frames are processed locally in your browser; this demo does not upload video.</p>
+      </article>
+
+      <article class="panel arena-panel">
+        <div class="panel-heading">
+          <div><span class="section-kicker">02 / THE ARENA</span><h2>Choose your fate</h2></div>
+          <span class="round-counter" id="roundCounter">ROUND 00</span>
+        </div>
+        <div class="versus-row">
+          <div class="fighter-card">
+            <span class="fighter-label">PLAYER</span>
+            <div class="fighter-orb player-orb" id="playerOrb"><span id="playerEmoji">✊</span></div>
+            <strong id="playerMove">Ready?</strong>
+            <span class="fighter-sub" id="playerSub">You</span>
+          </div>
+          <div class="versus-mark">VS</div>
+          <div class="fighter-card">
+            <span class="fighter-label">COMPUTER</span>
+            <div class="fighter-orb computer-orb" id="computerOrb"><span id="computerEmoji">✦</span></div>
+            <strong id="computerMove">Waiting</strong>
+            <span class="fighter-sub">CPU</span>
+          </div>
+        </div>
+        <div class="result-banner" id="resultBanner">
+          <span class="result-spark">✧</span>
+          <div><strong id="resultTitle">Ready when you are</strong><span id="resultText">Show ✊, ✋, or ✌️ to the camera.</span></div>
+        </div>
+        <div class="scoreboard">
+          <div class="score-card"><span>YOUR WINS</span><strong id="playerScore">0</strong></div>
+          <div class="score-divider"></div>
+          <div class="score-card"><span>DRAWS</span><strong id="drawScore">0</strong></div>
+          <div class="score-divider"></div>
+          <div class="score-card"><span>CPU WINS</span><strong id="computerScore">0</strong></div>
+        </div>
+        <button class="button button-play" id="playBtn" disabled><span>⚡</span> Lock gesture & play</button>
+        <button class="reset-link" id="resetBtn">↻ Reset match score</button>
+        <div class="how-to">
+          <div class="how-to-heading"><span class="section-kicker">QUICK GUIDE</span><span>Show one clearly</span></div>
+          <div class="gesture-guide">
+            <div class="guide-item"><span>✊</span><strong>Rock</strong><small>Closed fist</small></div>
+            <div class="guide-item"><span>✋</span><strong>Paper</strong><small>Open palm</small></div>
+            <div class="guide-item"><span>✌️</span><strong>Scissors</strong><small>Two fingers</small></div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="bottom-strip">
+      <div class="bottom-icon">✧</div><div><strong>Built with computer vision</strong><span>MediaPipe hand landmarks • JavaScript • HTML & CSS</span></div>
+      <span class="bottom-tag">PORTFOLIO PROJECT</span>
+    </section>
+    <footer><span>GESTURE ARENA <span class="footer-muted">/ A ROCK PAPER SCISSORS AI DEMO</span></span><span>Made for learning • Built in the browser</span></footer>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
